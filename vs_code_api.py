@@ -1,3 +1,7 @@
+####### Pour tester API en local
+# uvicorn nom_de_votre_module:app --reload
+
+
 # Librairies
 import mlflow.sklearn
 import pandas as pd
@@ -90,8 +94,11 @@ def shap_vector(id_client: dict):
     explainer = shap.TreeExplainer(model)
 
     # Convert the DataFrame X to a NumPy array
-    X_array = X.values
-    shap_values = explainer.shap_values(X_array)
+    # X_array = X.values
+    # shap_values = explainer.shap_values(X_array)
+
+    # Conservant le format DataFrame
+    shap_values = explainer.shap_values(X)
 
     # Serialize Shapley values using the custom encoder
     shap_values_json = json.dumps({'shap_values': shap_values}, cls=NumpyEncoder)
