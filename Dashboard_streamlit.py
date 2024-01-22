@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from fastapi import FastAPI 
+import plotly.express as px
 
 # Titre du Dashboard
 st.title("Dashboard risque de défaut")
@@ -43,7 +44,7 @@ if button_clicked:
             X_shap = pd.DataFrame(X_shap)
 
             # Affichage des prédictions
-            st.subheader(f"Risque de défault du client n {client_id}")
+            st.subheader(f"Risque de défault du client")
             prediction_percentage = round(prediction_value * 100, 1)
             # st.write(f"Probabilité de défaut du client: {prediction_percentage}%")
 
@@ -52,7 +53,7 @@ if button_clicked:
             # # Calcul de la probabilité prédite
             # prediction_percentage = round(prediction_value * 100, 1)
             # Définir la couleur en fonction de la probabilité
-            progress_color = 'green' if prediction_percentage <= 50 else 'red'
+            progress_color = 'green' if prediction_percentage <= 45 else 'red'
             # Afficher le compteur plot avec la couleur appropriée
             # st.progress(prediction_percentage / 100).progress_style(progress_color)
             # Afficher la probabilité
@@ -73,6 +74,41 @@ if button_clicked:
             # Afficher le graphique avec Streamlit
             st.subheader("Shap-values : Importance des variables prédictives")
             st.pyplot(fig)
+
+            # Création d'un DataFrame pandas avec les valeurs SHAP
+            shap_df = pd.DataFrame(shap_values_array, columns=X_shap.columns)
+            # Calcul de la moyenne des valeurs SHAP absolues pour chaque caractéristique
+            mean_shap_values = shap_df.abs().mean()
+            # Sélection des 20 caractéristiques les plus prédictives
+            top_features = mean_shap_values.nlargest(20).index
+            # Création d'un graphique interactif avec plotly express pour les dix caractéristiques
+            fig_importance = px.bar(
+                mean_shap_values[top_features],
+                title="<b>Top 20 des variables prédictives par SHAP Value</b><br><sup>lecture : variables qui ont le plus d'influence sur la probabilité de faire défault </sup>",
+                labels={'value': 'Mean SHAP Value', 'index': 'Feature'}
+                )
+            fig_importance.update_layout(xaxis_title="", yaxis_title="Importance")
+            st.plotly_chart(fig_importance)
+
+            # Création d'un graphique en barres avec Plotly Express
+            fig_coef = px.bar(
+                shap_df[top_features],
+                # title="Influence des 20 variables les plus prédictives sur le modèle",
+                title = "<b>Influence des 20 variables les plus prédictives sur le modèle</b><br><sup>lecture : un coefficient positif tire la probabilité de défault à la hausse et inversement pour une valeure négative</sup>",
+                labels={'index': 'Feature', 'value': 'SHAP Value'},
+                barmode='group',
+                height=400, width=800
+                        )
+
+            # Mise en forme du graphique
+            fig_coef.update_layout(xaxis=dict(showgrid=True, gridcolor='WhiteSmoke', zerolinecolor='Gainsboro'),
+                            yaxis=dict(showgrid=True, gridcolor='WhiteSmoke', zerolinecolor='Gainsboro'),
+                            plot_bgcolor='white')
+            
+            # Visualisation fig_coef dans streamlit
+            st.plotly_chart(fig_coef)
+
+
             
         else:
             st.error(f"Erreur lors de la récupération des données. Predict Proba status: {response_predict_proba.status_code}, Shap status: {response_shap.status_code}")
