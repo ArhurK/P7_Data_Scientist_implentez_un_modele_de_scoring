@@ -1,6 +1,8 @@
 ####### Pour tester API en local ########
 # uvicorn nom_de_votre_module:app --reload
 # uvicorn vs_code_api:app --reload
+###########################################
+
 
 # Librairies
 import mlflow.sklearn
@@ -10,7 +12,7 @@ from fastapi import FastAPI , HTTPException
 import json
 import numpy as np
 import shap
-from flask import Flask, request, jsonify
+# from flask import Flask, request, jsonify
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -48,7 +50,7 @@ def Hello():
     return {'Hello ceci est un test' : 'test 1'}
 
 # api qui obtient le predict proba du modèle
-@app.get('/predict_proba') # get pas post
+@app.get('/predict_proba') 
 def predict_proba(id_client : dict):
 
     # Sélection ID client
