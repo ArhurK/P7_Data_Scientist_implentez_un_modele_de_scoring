@@ -7,5 +7,5 @@ Données proviennent du concours Kaggle "Home Credit Default Risk"
 
 Fichiers :
 
-P7_Data_Scientist_Scoring.ipynb : Notebook google colab pour la modélisation
-mlruns.zip  : fichier mlFlow contenant les modèles
+- P7_Data_Scientist_Scoring.ipynb : Notebook google colab pour la modélisation
+- mlruns.zip  : fichier mlFlow contenant les modèles
